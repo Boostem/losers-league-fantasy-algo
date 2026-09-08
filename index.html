@@ -21,6 +21,8 @@
     --warn-bg: #fdf3d7;
     --bad: #b42318;
     --bad-bg: #fde8e6;
+    --e1: #1f6feb;
+    --e2: #8250df;
     --radius: 10px;
     --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   }
@@ -40,6 +42,8 @@
       --warn-bg: #2b2410;
       --bad: #ff7b72;
       --bad-bg: #2d1513;
+      --e1: #58a6ff;
+      --e2: #b083f0;
     }
   }
   * { box-sizing: border-box; }
@@ -50,7 +54,7 @@
     font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     -webkit-text-size-adjust: 100%;
   }
-  .wrap { max-width: 1000px; margin: 0 auto; padding: 16px 14px 64px; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 16px 14px 64px; }
 
   header.top {
     display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
@@ -87,6 +91,7 @@
   button:disabled { opacity: 0.45; cursor: not-allowed; }
   button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
   button.primary:hover:not(:disabled) { filter: brightness(1.08); color: #fff; }
+  button.tiny { padding: 3px 8px; font-size: 12px; border-radius: 6px; }
 
   .chips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
   .chip {
@@ -96,16 +101,25 @@
   }
   .chip[aria-pressed="true"] { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); }
 
-  /* Recommendation */
-  .rec { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
-  .rec .team {
-    font-size: 30px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;
+  /* Entry cards */
+  .entries { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+  .entry {
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 12px; background: var(--panel-2);
+    border-left: 3px solid var(--tint, var(--accent));
   }
-  .rec .meta { color: var(--ink-dim); font-size: 14px; }
-  .rec .prob {
-    font-family: var(--mono); font-size: 26px; font-weight: 600; color: var(--good);
+  .entry .name {
+    font-size: 12px; font-weight: 650; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--tint, var(--accent)); margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
   }
+  .entry .name .spacer { flex: 1; }
+  .rec { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .rec .team { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+  .rec .meta { color: var(--ink-dim); font-size: 13px; }
+  .rec .prob { font-family: var(--mono); font-size: 20px; font-weight: 600; color: var(--good); }
   .rec .spacer { flex: 1 1 auto; }
+
   .note {
     margin-top: 10px; padding: 8px 10px; border-radius: 7px;
     background: var(--warn-bg); color: var(--warn); font-size: 13px;
@@ -121,43 +135,39 @@
     padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap;
   }
   th.num, td.num { text-align: right; }
-  td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  td { padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
   tbody tr:hover { background: var(--panel-2); }
-  tr.used { opacity: 0.4; }
-  tr.picked { background: var(--good-bg); }
+  tr.spent { opacity: 0.42; }
   .abbr { font-weight: 650; }
   .oppo { color: var(--ink-dim); }
   .p { font-family: var(--mono); font-weight: 600; }
-  .bar {
-    display: inline-block; height: 6px; border-radius: 3px;
-    background: var(--accent); vertical-align: middle; min-width: 2px;
-  }
+  .bar { display: inline-block; height: 6px; border-radius: 3px; background: var(--accent); vertical-align: middle; min-width: 2px; }
   .tag {
     font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em;
     padding: 2px 5px; border-radius: 4px; background: var(--panel-2);
     color: var(--ink-faint); border: 1px solid var(--line); white-space: nowrap;
   }
   .tag.proj { color: var(--warn); border-color: var(--warn); }
-  .tag.save { color: var(--accent); border-color: var(--accent); }
+  /* Not ".tag.rec": that would also match the ".rec" flex layout above. */
+  .tag.chosen { color: #fff; font-weight: 650; }
   .scroll { overflow-x: auto; }
+  .acts { display: flex; gap: 4px; justify-content: flex-end; }
 
-  /* Season tracker */
-  .weeks { display: flex; flex-wrap: wrap; gap: 5px; }
+  /* Week grid */
+  .weeks { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
   .wk {
-    min-width: 62px; padding: 5px 7px; border-radius: 7px; font-size: 12px;
-    border: 1px solid var(--line); background: var(--panel-2);
+    min-width: 54px; padding: 4px 6px; border-radius: 6px; font-size: 12px;
+    border: 1px solid var(--line); background: var(--panel);
   }
-  .wk b { display: block; font-size: 10px; color: var(--ink-faint); font-weight: 600; }
+  .wk b { display: block; font-size: 9px; color: var(--ink-faint); font-weight: 600; }
   .wk.loss { background: var(--good-bg); border-color: var(--good); color: var(--good); }
   .wk.win, .wk.tie-bad { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); }
   .wk.pending { border-style: dashed; }
 
-  .statline { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+  .statline { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
   .stat { font-size: 13px; color: var(--ink-dim); }
   .stat b { color: var(--ink); font-weight: 650; }
-  .pill {
-    font-size: 12px; padding: 3px 9px; border-radius: 999px; font-weight: 600;
-  }
+  .pill { font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
   .pill.alive { background: var(--good-bg); color: var(--good); }
   .pill.dead { background: var(--bad-bg); color: var(--bad); }
 
@@ -174,11 +184,12 @@
 
   #status { font-size: 13px; color: var(--ink-dim); min-height: 20px; }
   .err { color: var(--bad); }
+  #storageMode { font-size: 12px; }
+  #storageMode b { font-weight: 650; }
 
   @media (max-width: 620px) {
     .hide-sm { display: none; }
-    .rec .team { font-size: 24px; }
-    .rec .prob { font-size: 22px; }
+    .rec .team { font-size: 22px; }
   }
 </style>
 </head>
@@ -201,30 +212,26 @@
       <select id="week"></select>
     </div>
     <div class="field">
-      <label for="profile">Profile</label>
-      <select id="profile"></select>
-    </div>
-    <div class="field">
-      <label>&nbsp;</label>
-      <button id="newProfile">+ Profile</button>
-    </div>
-    <div class="field">
       <label>&nbsp;</label>
       <button id="refresh">Refresh odds</button>
+    </div>
+    <div class="field" style="flex:1; min-width:200px">
+      <label>&nbsp;</label>
+      <div id="storageMode" class="muted"></div>
     </div>
   </div>
   <div id="status" style="margin-top:10px"></div>
 </div>
 
-<div class="panel" id="recPanel">
-  <h2>Recommended pick</h2>
-  <div id="rec"></div>
+<div class="panel">
+  <h2>Recommended picks</h2>
+  <div class="entries" id="recs"></div>
+  <div id="recNote"></div>
 </div>
 
 <div class="panel">
-  <h2>Your season</h2>
-  <div class="statline" id="statline"></div>
-  <div class="weeks" id="weeks"></div>
+  <h2>Your entries</h2>
+  <div class="entries" id="standings"></div>
 </div>
 
 <div class="panel">
@@ -236,8 +243,6 @@
     <span class="chip" role="button" tabindex="0" aria-pressed="false" data-day="Sat">Sat</span>
     <span class="chip" role="button" tabindex="0" aria-pressed="false" data-day="Sun">Sun</span>
     <span class="chip" role="button" tabindex="0" aria-pressed="false" data-day="Mon">Mon</span>
-    <span style="flex:1"></span>
-    <label class="muted" style="cursor:pointer"><input type="checkbox" id="hideUsed"> hide used</label>
   </div>
   <div class="scroll"><table id="board">
     <thead><tr>
@@ -248,6 +253,7 @@
       <th class="num">Lose&nbsp;%</th>
       <th></th>
       <th></th>
+      <th class="num">Pick for</th>
     </tr></thead>
     <tbody></tbody>
   </table></div>
@@ -258,15 +264,15 @@
   <h2>League rules &amp; data</h2>
   <div class="controls">
     <div class="field">
-      <label for="savesTotal">Saves (mulligans)</label>
-      <input type="number" id="savesTotal" min="0" max="5" step="1" style="width:100px">
-    </div>
-    <div class="field">
       <label for="tieRule">A tie counts as</label>
       <select id="tieRule">
         <option value="survive">Survive (tie is a non-win)</option>
         <option value="fail">Fail (must lose outright)</option>
       </select>
+    </div>
+    <div class="field">
+      <label>&nbsp;</label>
+      <button id="addEntry">+ Add entry</button>
     </div>
     <div class="field">
       <label>&nbsp;</label>
@@ -278,10 +284,13 @@
     </div>
     <div class="field">
       <label>&nbsp;</label>
-      <button id="resetBtn">Reset profile</button>
+      <button id="resetBtn">Reset season</button>
     </div>
   </div>
   <input type="file" id="importFile" accept="application/json,.json" hidden>
+  <div class="muted" style="margin-top:8px">
+    Saves are set per entry on each entry card above.
+  </div>
 
   <details class="foot">
     <summary>Model calibration &amp; backtest</summary>
@@ -300,9 +309,8 @@
   </details>
 </div>
 
-<p class="muted">
-  Odds and results come from ESPN's public API. Picks are stored in this browser only
-  (<code>localStorage</code>) — use Export JSON to back them up.
+<p class="muted" id="footnote">
+  Odds and results come from ESPN's public API.
 </p>
 
 </div>
@@ -331,6 +339,7 @@ const CARRYOVER_RATINGS = (DATA && DATA.ratingsCarryover) || {};
 
 const LAST_WEEK = 18;
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const ENTRY_TINTS = ["var(--e1)", "var(--e2)", "#0f766e", "#b45309"];
 
 const SCOREBOARD = (season, week) =>
   `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard` +
@@ -360,8 +369,8 @@ const GH_NORM = Math.sqrt(Math.PI);
  *
  * The projection carries real scatter (build_history.py measures it), and the
  * lookahead cares about the *best* future opportunity — a maximum over noisy
- * quantities. Averaging the win curve over that scatter is what stops the
- * lookahead from systematically underrating future weeks.
+ * quantities. Averaging the win curve over that scatter is what stops future
+ * weeks from being systematically underrated.
  */
 function projectedLoseProb(homeLine, isHome) {
   const sigma = PROJ.sigma;
@@ -505,8 +514,6 @@ function parseScoreboard(doc) {
       id: String(event.id),
       date: comp.date || event.date,
       home: abbr(home), away: abbr(away),
-      homeName: (home.team || {}).shortDisplayName || abbr(home),
-      awayName: (away.team || {}).shortDisplayName || abbr(away),
       homeScore: num(home.score), awayScore: num(away.score),
       completed: !!status.completed,
       state: status.state || "pre",
@@ -586,91 +593,174 @@ async function fetchCurrent() {
 }
 
 // ---------------------------------------------------------------------------
-// Profile state
+// Storage: a JSON file when scripts/serve.py is running, else localStorage
 // ---------------------------------------------------------------------------
 
-const STATE_PREFIX = "ll.state.";
-const PROFILES_KEY = "ll.profiles";
+const Store = {
+  mode: "local",          // "server" once the API answers
+  path: null,             // server-side file, for display
 
-function listProfiles() {
-  try {
-    const raw = localStorage.getItem(PROFILES_KEY);
-    const arr = raw ? JSON.parse(raw) : null;
-    if (Array.isArray(arr) && arr.length) return arr;
-  } catch (_) { /* fall through to default */ }
-  return ["main"];
-}
+  /** Probe the API once, unless we already know there cannot be one. */
+  async detect(season) {
+    // Opened straight off disk: a fetch to a relative path is blocked before
+    // it is sent, so skip it rather than log a CORS error on every load.
+    if (location.protocol === "file:") { this.mode = "local"; return null; }
+    try {
+      const resp = await fetch(`api/state?season=${season}`, {
+        headers: { Accept: "application/json" },
+      });
+      if (!resp.ok) return null;
+      const body = await resp.json();
+      this.mode = "server";
+      return body.state || null;
+    } catch (_) {
+      this.mode = "local";
+      return null;
+    }
+  },
 
-function saveProfiles(names) {
-  try { localStorage.setItem(PROFILES_KEY, JSON.stringify(names)); } catch (_) {}
-}
+  localKey(season) { return `ll.season.${season}`; },
 
-function blankState(profile, season) {
+  async load(season) {
+    if (this.mode === "server") {
+      try {
+        const resp = await fetch(`api/state?season=${season}`);
+        if (resp.ok) return (await resp.json()).state || null;
+      } catch (_) { /* fall through to browser storage */ }
+    }
+    try {
+      const raw = localStorage.getItem(this.localKey(season));
+      return raw ? JSON.parse(raw) : null;
+    } catch (_) { return null; }
+  },
+
+  async save(state) {
+    // Always keep a browser copy: it costs nothing and means a server that
+    // goes away mid-season does not take the picks with it.
+    try {
+      localStorage.setItem(this.localKey(state.season), JSON.stringify(state));
+    } catch (_) { /* private mode or quota */ }
+    if (this.mode !== "server") return { ok: true, where: "browser storage" };
+    const resp = await fetch(`api/state?season=${state.season}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(state),
+    });
+    if (!resp.ok) {
+      const detail = await resp.text().catch(() => "");
+      throw new Error(`server refused the save (${resp.status}) ${detail.slice(0, 120)}`);
+    }
+    const body = await resp.json().catch(() => ({}));
+    this.path = body.path || this.path;
+    return { ok: true, where: this.path || "state file" };
+  },
+};
+
+// ---------------------------------------------------------------------------
+// State: a season holds one or more entries
+// ---------------------------------------------------------------------------
+
+let state = null;
+
+function blankEntry(n, savesTotal = 2) {
   return {
-    profile, season,
-    savesTotal: 1, savesUsed: 0,
-    tieSurvives: true,
-    eliminated: false,
+    id: `e${n}`, name: `Entry ${n}`,
+    savesTotal, savesUsed: 0, eliminated: false,
     used: [], picks: {},
   };
 }
 
-function loadState(profile, season) {
-  try {
-    const raw = localStorage.getItem(`${STATE_PREFIX}${profile}.${season}`);
-    if (raw) return normaliseState(JSON.parse(raw), profile, season);
-  } catch (_) {}
-  return blankState(profile, season);
+function blankState(season, entryCount = 2) {
+  return {
+    season, tieSurvives: true,
+    entries: Array.from({ length: entryCount }, (_, i) => blankEntry(i + 1)),
+  };
 }
 
-function saveState(st) {
-  try {
-    localStorage.setItem(`${STATE_PREFIX}${st.profile}.${st.season}`,
-      JSON.stringify(st));
-  } catch (e) {
-    setStatus("Could not save to this browser's storage: " + e.message, true);
-  }
-}
+/**
+ * Accept this app's shape, the earlier single-profile shape, and the Python
+ * CLI's state files. A single-entry document becomes entry 1.
+ */
+function normaliseState(raw, season) {
+  if (!raw || typeof raw !== "object") return blankState(season);
 
-/** Accept both this app's shape and the old Python CLI's state files. */
-function normaliseState(raw, profile, season) {
-  const st = blankState(profile, season);
-  if (!raw || typeof raw !== "object") return st;
-  st.savesTotal = Number(raw.savesTotal ?? raw.saves_total ?? 1) || 0;
-  if (raw.savesUsed != null) {
-    st.savesUsed = Number(raw.savesUsed) || 0;
-  } else if (raw.saves_left != null) {
-    st.savesUsed = Math.max(0, st.savesTotal - (Number(raw.saves_left) || 0));
+  const readEntry = (src, n) => {
+    const e = blankEntry(n);
+    if (src.name) e.name = String(src.name);
+    if (src.id) e.id = String(src.id);
+    e.savesTotal = Number(src.savesTotal ?? src.saves_total ?? 2) || 0;
+    if (src.savesUsed != null) {
+      e.savesUsed = Number(src.savesUsed) || 0;
+    } else if (src.saves_left != null) {
+      e.savesUsed = Math.max(0, e.savesTotal - (Number(src.saves_left) || 0));
+    }
+    e.used = (src.used || []).map((t) => String(t).toUpperCase());
+    for (const [wk, p] of Object.entries(src.picks || {})) {
+      if (!p) continue;
+      e.picks[String(wk)] = {
+        week: Number(p.week ?? wk),
+        team: String(p.team || "").toUpperCase(),
+        opponent: p.opponent ? String(p.opponent).toUpperCase() : null,
+        result: p.result || "pending",
+      };
+    }
+    return e;
+  };
+
+  const st = {
+    season: Number(raw.season || season) || season,
+    tieSurvives: raw.tieSurvives !== undefined ? !!raw.tieSurvives : true,
+    entries: [],
+  };
+  if (Array.isArray(raw.entries) && raw.entries.length) {
+    st.entries = raw.entries.map((e, i) => readEntry(e, i + 1));
+  } else {
+    // Older single-profile document, or a CLI state file.
+    st.entries = [readEntry(raw, 1)];
   }
-  st.tieSurvives = raw.tieSurvives !== undefined ? !!raw.tieSurvives : true;
-  st.eliminated = !!raw.eliminated;
-  st.used = (raw.used || []).map((t) => String(t).toUpperCase());
-  for (const [wk, p] of Object.entries(raw.picks || {})) {
-    if (!p) continue;
-    st.picks[String(wk)] = {
-      week: Number(p.week ?? wk),
-      team: String(p.team || "").toUpperCase(),
-      opponent: p.opponent ? String(p.opponent).toUpperCase() : null,
-      result: p.result || "pending",
-    };
-  }
+  // Ids must be unique — they key the DOM and the pick buttons.
+  const seen = new Set();
+  st.entries.forEach((e, i) => {
+    if (!e.id || seen.has(e.id)) e.id = `e${i + 1}`;
+    seen.add(e.id);
+  });
   return st;
 }
 
-/** Recompute saves used and elimination from the recorded picks. */
-function recomputeStanding(st) {
+/** Recompute saves used and elimination for one entry from its picks. */
+function recomputeEntry(entry, tieSurvives) {
   let used = 0;
   let eliminated = false;
-  for (const wk of Object.keys(st.picks).map(Number).sort((a, b) => a - b)) {
-    const p = st.picks[String(wk)];
-    if (!p || p.result === "pending" || !p.result) continue;
-    const survived = p.result === "loss" || (p.result === "tie" && st.tieSurvives);
+  for (const wk of Object.keys(entry.picks).map(Number).sort((a, b) => a - b)) {
+    const p = entry.picks[String(wk)];
+    if (!p || !p.result || p.result === "pending") continue;
+    const survived = p.result === "loss" || (p.result === "tie" && tieSurvives);
     if (survived) continue;
-    if (used < st.savesTotal) used += 1;
+    if (used < entry.savesTotal) used += 1;
     else { eliminated = true; break; }
   }
-  st.savesUsed = used;
-  st.eliminated = eliminated;
+  entry.savesUsed = used;
+  entry.eliminated = eliminated;
+}
+
+function recomputeAll() {
+  for (const e of state.entries) recomputeEntry(e, state.tieSurvives);
+}
+
+let saveTimer = null;
+function persist({ immediate = false } = {}) {
+  recomputeAll();
+  const run = async () => {
+    try {
+      const res = await Store.save(state);
+      renderStorageMode(res.where);
+    } catch (e) {
+      setStatus("Could not save: " + e.message, true);
+    }
+  };
+  if (immediate) return run();
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(run, 250);
 }
 
 // ---------------------------------------------------------------------------
@@ -678,19 +768,16 @@ function recomputeStanding(st) {
 // ---------------------------------------------------------------------------
 
 const app = {
-  season: null,
-  week: null,
-  currentSeason: null,
-  currentWeek: null,
-  profile: "main",
-  state: null,
+  season: null, week: null,
+  currentSeason: null, currentWeek: null,
   weeks: new Map(),      // week number -> {games, byes}
   ratings: {},
   avoidDays: new Set(),
-  hideUsed: false,
 };
 
 const $ = (sel) => document.querySelector(sel);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) =>
+  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 function setStatus(msg, isError = false) {
   const el = $("#status");
@@ -710,6 +797,8 @@ function kickoff(dateStr) {
   hh = hh % 12 || 12;
   return { day, label: `${day} ${hh}:${mm}${ap}` };
 }
+
+function tintFor(i) { return ENTRY_TINTS[i % ENTRY_TINTS.length]; }
 
 /** Every team playing in a week, with its probability of losing. */
 function buildBoard(weekNo) {
@@ -735,7 +824,7 @@ function buildBoard(weekNo) {
   return rows;
 }
 
-/** Best projected chance each unused team has to lose in the coming weeks. */
+/** Best projected chance each team has to lose in the coming weeks. */
 function futureBest(fromWeek) {
   const best = {};
   const horizon = PROJ.lookaheadHorizon || 6;
@@ -745,8 +834,6 @@ function futureBest(fromWeek) {
     for (const g of wk.games) {
       const real = homeLineOf(g);
       for (const [team, isHome] of [[g.home, true], [g.away, false]]) {
-        // Books post lines only a week or so out, so most future weeks fall
-        // back to the ratings projection.
         const p = real != null
           ? loseProb(real, isHome)
           : projectedLoseProb(
@@ -760,35 +847,63 @@ function futureBest(fromWeek) {
   return best;
 }
 
-/**
- * Recommend the available team most likely to lose this week.
- *
- * Deliberately myopic. build_history.py evaluated the alternatives exactly
- * over 2021-2025 — because a strategy's pick sequence never depends on
- * results, its survival probability can be computed rather than sampled — and
- * planning around future weeks does not pay. A posted line beats a projection
- * (projections carry ~3.7 points of residual scatter), so giving up a known
- * edge today for a guessed one later loses ground: full-horizon planning drops
- * season survival from 10.7% to 9.6%.
- *
- * The future-week numbers are still computed, but only to annotate the board.
- */
-function recommend(rows, weekNo) {
-  const used = new Set(app.state.used);
-  const avail = rows.filter((r) => !used.has(r.team) && !isAvoided(r));
-
-  const best = futureBest(weekNo);
-  for (const r of rows) {
-    r.futureBest = best[r.team] || 0;
-    r.gainLater = Math.max(0, r.futureBest - r.loseProb);
-  }
-  if (!avail.length) return null;
-  return avail.reduce((a, b) => (b.loseProb > a.loseProb ? b : a));
-}
-
 function isAvoided(row) {
   if (!app.avoidDays.size) return false;
   return app.avoidDays.has(kickoff(row.game.date).day);
+}
+
+function permutations(items) {
+  if (items.length <= 1) return [items];
+  if (items.length > 4) return [items];   // beyond this, order barely matters
+  const out = [];
+  for (let i = 0; i < items.length; i++) {
+    const rest = items.slice(0, i).concat(items.slice(i + 1));
+    for (const p of permutations(rest)) out.push([items[i]].concat(p));
+  }
+  return out;
+}
+
+/**
+ * Recommend a team for each entry that still needs one — never the same team
+ * twice in a week.
+ *
+ * Two entries on the same team is the trap here: if that team wins you lose
+ * both, so the pair survives with probability p, exactly what one entry alone
+ * would give. Spreading across two games makes it 1-(1-p1)(1-p2). With week 1's
+ * numbers that is 95% instead of 79% — the second entry only means something if
+ * it is pointed somewhere else.
+ *
+ * Each entry has its own spent-teams list, so which entry gets first refusal
+ * matters; every order is tried and the one maximising P(at least one survives)
+ * wins.
+ */
+function recommendAll(rows, weekNo) {
+  const ranked = rows.filter((r) => !isAvoided(r));
+  const already = new Set();
+  for (const e of state.entries) {
+    const p = e.picks[String(weekNo)];
+    if (p) already.add(p.team);
+  }
+  const needing = state.entries.filter(
+    (e) => !e.eliminated && !e.picks[String(weekNo)]);
+  if (!needing.length || !ranked.length) return new Map();
+
+  let best = null, bestMiss = Infinity;
+  for (const order of permutations(needing)) {
+    const taken = new Set(already);
+    const assign = new Map();
+    let miss = 1;
+    for (const entry of order) {
+      const spent = new Set(entry.used);
+      const pick = ranked.find((r) => !spent.has(r.team) && !taken.has(r.team));
+      if (!pick) continue;
+      taken.add(pick.team);
+      assign.set(entry.id, pick);
+      miss *= (1 - pick.loseProb);
+    }
+    if (assign.size && miss < bestMiss) { bestMiss = miss; best = assign; }
+  }
+  return best || new Map();
 }
 
 // ---------------------------------------------------------------------------
@@ -796,79 +911,103 @@ function isAvoided(row) {
 // ---------------------------------------------------------------------------
 
 function render() {
-  if (!app.state) return;
-  recomputeStanding(app.state);
-  renderStanding();
+  if (!state) return;
+  recomputeAll();
   const rows = buildBoard(app.week);
-  const pick = recommend(rows, app.week);
-  renderRec(rows, pick);
-  renderBoard(rows, pick);
+  const best = futureBest(app.week);
+  for (const r of rows) {
+    r.futureBest = best[r.team] || 0;
+    r.gainLater = Math.max(0, r.futureBest - r.loseProb);
+  }
+  const recs = recommendAll(rows, app.week);
+  renderRecs(rows, recs);
+  renderStandings();
+  renderBoard(rows, recs);
 }
 
-function renderRec(rows, pick) {
-  const el = $("#rec");
-  const st = app.state;
-  const existing = st.picks[String(app.week)];
+function renderRecs(rows, recs) {
+  const host = $("#recs");
+  host.innerHTML = "";
+  const wk = String(app.week);
 
-  if (existing) {
-    const resultText = existing.result === "pending"
-      ? "awaiting result" : `result: ${existing.result}`;
-    el.innerHTML = `
-      <div class="rec">
-        <div>
-          <div class="team">${existing.team}</div>
-          <div class="meta">locked in for week ${app.week} vs ${existing.opponent || "?"} — ${resultText}</div>
-        </div>
-        <div class="spacer"></div>
-        <button id="settleBtn" class="primary">Settle week</button>
-        <button id="undoBtn">Undo pick</button>
-      </div>`;
-    $("#settleBtn").onclick = settleWeek;
-    $("#undoBtn").onclick = () => undoPick(app.week);
-    return;
+  state.entries.forEach((entry, i) => {
+    const card = document.createElement("div");
+    card.className = "entry";
+    card.style.setProperty("--tint", tintFor(i));
+    const existing = entry.picks[wk];
+    let body;
+
+    if (existing) {
+      const res = existing.result === "pending"
+        ? "awaiting result" : `result: ${existing.result}`;
+      body = `<div class="rec">
+          <div>
+            <div class="team">${esc(existing.team)}</div>
+            <div class="meta">vs ${esc(existing.opponent || "?")} — ${res}</div>
+          </div>
+          <div class="spacer"></div>
+          <button class="primary tiny" data-settle="${esc(entry.id)}">Settle</button>
+          <button class="tiny" data-undo="${esc(entry.id)}">Undo</button>
+        </div>`;
+    } else if (entry.eliminated) {
+      body = `<div class="muted">Eliminated — no pick needed.</div>`;
+    } else {
+      const pick = recs.get(entry.id);
+      if (!pick) {
+        body = `<div class="muted">No team available this week.</div>`;
+      } else {
+        const k = kickoff(pick.game.date);
+        const line = pick.projected
+          ? `projected ${describeLine(pick)}`
+          : describeLine(pick) + (pick.game.provider ? ` · ${esc(pick.game.provider)}` : "");
+        body = `<div class="rec">
+            <div>
+              <div class="team">${esc(pick.team)}</div>
+              <div class="meta">${pick.isHome ? "vs" : "at"} ${esc(pick.opponent)} · ${k.label} · ${line}</div>
+            </div>
+            <div class="spacer"></div>
+            <div style="text-align:right">
+              <div class="prob">${fmtPct(pick.loseProb)}</div>
+              <div class="muted">to lose</div>
+            </div>
+            <button class="primary tiny" data-pick="${esc(entry.id)}"
+                    data-team="${esc(pick.team)}">Lock in</button>
+          </div>`;
+      }
+    }
+    card.innerHTML = `<div class="name">${esc(entry.name)}
+        <span class="spacer"></span>
+        <button class="tiny" data-rename="${esc(entry.id)}">rename</button>
+      </div>${body}`;
+    host.appendChild(card);
+  });
+
+  // Combined odds for the week, which is the number that actually matters when
+  // you hold more than one entry.
+  const note = $("#recNote");
+  const live = [];
+  for (const entry of state.entries) {
+    if (entry.eliminated) continue;
+    const p = entry.picks[wk];
+    if (p) {
+      const row = rows.find((r) => r.team === p.team);
+      if (row) live.push({ name: entry.name, team: p.team, prob: row.loseProb });
+    } else if (recs.get(entry.id)) {
+      const r = recs.get(entry.id);
+      live.push({ name: entry.name, team: r.team, prob: r.loseProb });
+    }
   }
-
-  if (st.eliminated) {
-    el.innerHTML = `<div class="note">You are eliminated for ${st.season}. Reset the profile or add a save to keep playing.</div>`;
-    return;
+  if (live.length >= 2) {
+    const miss = live.reduce((acc, x) => acc * (1 - x.prob), 1);
+    const same = new Set(live.map((x) => x.team)).size < live.length;
+    note.innerHTML = `<div class="note ${same ? "" : "info"}">
+      ${live.map((x) => `${esc(x.name)}: <b>${esc(x.team)}</b> ${fmtPct(x.prob)}`).join(" &nbsp;·&nbsp; ")}
+      &nbsp;→&nbsp; at least one survives the week: <b>${fmtPct(1 - miss)}</b>.
+      ${same ? "Both entries are on the same team — if it wins you lose both at once. Split them across two games."
+             : ""}</div>`;
+  } else {
+    note.innerHTML = "";
   }
-  if (!pick) {
-    el.innerHTML = `<div class="note info">No available team this week — every team is either used or filtered out.</div>`;
-    return;
-  }
-
-  const kick = kickoff(pick.game.date);
-  const lineText = pick.projected
-    ? `projected ${describeLine(pick)}`
-    : `${describeLine(pick)}${pick.game.provider ? " · " + pick.game.provider : ""}`;
-
-  // Context only — these do not move the recommendation. Projected lines are
-  // too noisy to trade a posted line for; see recommend().
-  let warning = "";
-  const spent = new Set(app.state.used);
-  const later = rows.filter((r) => !spent.has(r.team) && r !== pick
-      && r.gainLater > 0.04).slice(0, 3);
-  if (later.length) {
-    warning = `<div class="note info">Also projects better later (context only —
-      the pick above still stands): ` +
-      later.map((r) => `<b>${r.team}</b> ${fmtPct(r.loseProb)} now vs ~${fmtPct(r.futureBest)} within ${PROJ.lookaheadHorizon} weeks`).join("; ") +
-      `.</div>`;
-  }
-
-  el.innerHTML = `
-    <div class="rec">
-      <div>
-        <div class="team">${pick.team}</div>
-        <div class="meta">${pick.isHome ? "vs" : "at"} ${pick.opponent} · ${kick.label} · ${lineText}</div>
-      </div>
-      <div class="spacer"></div>
-      <div style="text-align:right">
-        <div class="prob">${fmtPct(pick.loseProb)}</div>
-        <div class="muted">chance to lose</div>
-      </div>
-      <button id="pickBtn" class="primary">Lock in ${pick.team}</button>
-    </div>${warning}`;
-  $("#pickBtn").onclick = () => makePick(pick.team, pick.opponent);
 }
 
 function describeLine(row) {
@@ -884,82 +1023,133 @@ function describeLine(row) {
   return `${g.favorite} -${g.spread}`;
 }
 
-function renderBoard(rows, pick) {
+function renderStandings() {
+  const host = $("#standings");
+  host.innerHTML = "";
+  state.entries.forEach((entry, i) => {
+    const card = document.createElement("div");
+    card.className = "entry";
+    card.style.setProperty("--tint", tintFor(i));
+    const savesLeft = Math.max(0, entry.savesTotal - entry.savesUsed);
+
+    let weeks = "";
+    for (let w = 1; w <= LAST_WEEK; w++) {
+      const p = entry.picks[String(w)];
+      let cls = "wk";
+      if (p) {
+        if (p.result === "loss") cls += " loss";
+        else if (p.result === "win") cls += " win";
+        else if (p.result === "tie") cls += state.tieSurvives ? " loss" : " tie-bad";
+        else cls += " pending";
+      }
+      weeks += `<div class="${cls}" title="${p ? esc(p.team) + ": " + esc(p.result) : "no pick"}">
+        <b>WK ${w}</b>${p ? esc(p.team) : "—"}</div>`;
+    }
+
+    card.innerHTML = `
+      <div class="name">${esc(entry.name)}
+        <span class="spacer"></span>
+        ${state.entries.length > 1
+          ? `<button class="tiny" data-remove="${esc(entry.id)}">remove</button>` : ""}
+      </div>
+      <div class="statline">
+        <span class="pill ${entry.eliminated ? "dead" : "alive"}">${entry.eliminated ? "Eliminated" : "Alive"}</span>
+        <span class="stat">Saves <b>${savesLeft}/${entry.savesTotal}</b></span>
+        <span class="stat">Used <b>${entry.used.length}/32</b></span>
+        <span class="stat">Saves total
+          <input type="number" min="0" max="9" step="1" value="${entry.savesTotal}"
+                 data-saves="${esc(entry.id)}" style="width:62px;min-width:0">
+        </span>
+      </div>
+      <div class="weeks">${weeks}</div>`;
+    host.appendChild(card);
+  });
+}
+
+function renderBoard(rows, recs) {
   const tbody = $("#board tbody");
   tbody.innerHTML = "";
-  const used = new Set(app.state.used);
-  const usedWeek = {};
-  for (const [wk, p] of Object.entries(app.state.picks)) usedWeek[p.team] = wk;
+  const wk = String(app.week);
+  const recByTeam = new Map();
+  for (const [entryId, row] of recs) recByTeam.set(row.team, entryId);
 
   const maxP = rows.length ? rows[0].loseProb : 1;
   for (const r of rows) {
-    const isUsed = used.has(r.team);
-    if (isUsed && app.hideUsed) continue;
-    const tr = document.createElement("tr");
-    tr.className = [isUsed ? "used" : "", pick && r === pick ? "picked" : ""]
-      .filter(Boolean).join(" ");
+    // Which entries have burned this team, and in which week.
+    const spentBy = state.entries
+      .map((e, i) => ({ e, i, wkUsed: Object.keys(e.picks)
+        .find((k) => e.picks[k].team === r.team) }))
+      .filter((x) => x.wkUsed !== undefined);
+    const allSpent = spentBy.length === state.entries.length;
 
-    const kick = kickoff(r.game.date);
-    const avoided = isAvoided(r);
+    const tr = document.createElement("tr");
+    tr.className = allSpent ? "spent" : "";
+
+    const k = kickoff(r.game.date);
     const tags = [];
     if (r.projected) tags.push(`<span class="tag proj">projected</span>`);
-    if (isUsed) tags.push(`<span class="tag">used wk ${usedWeek[r.team] || "?"}</span>`);
-    if (avoided) tags.push(`<span class="tag">filtered</span>`);
-    if (!isUsed && r.gainLater > 0.04) {
-      tags.push(`<span class="tag save">~${fmtPct(r.futureBest)} later</span>`);
+    for (const { e, i, wkUsed } of spentBy) {
+      tags.push(`<span class="tag" style="border-color:${tintFor(i)};color:${tintFor(i)}">${esc(e.name)} wk ${wkUsed}</span>`);
     }
+    const recEntryId = recByTeam.get(r.team);
+    if (recEntryId) {
+      const idx = state.entries.findIndex((e) => e.id === recEntryId);
+      tags.push(`<span class="tag chosen" style="background:${tintFor(idx)};border-color:${tintFor(idx)}">${esc(shortName(state.entries[idx], idx))} pick</span>`);
+    }
+    if (!allSpent && r.gainLater > 0.04) {
+      tags.push(`<span class="tag">~${fmtPct(r.futureBest)} later</span>`);
+    }
+
     const score = r.game.completed
       ? ` <span class="muted">${r.isHome ? r.game.homeScore : r.game.awayScore}-${r.isHome ? r.game.awayScore : r.game.homeScore}</span>`
       : "";
 
+    // A button per entry that could still use this team this week.
+    const buttons = state.entries.map((e, i) => {
+      if (e.eliminated || e.picks[wk] || e.used.includes(r.team)) return "";
+      return `<button class="tiny" data-pick="${esc(e.id)}" data-team="${esc(r.team)}"
+        style="border-color:${tintFor(i)};color:${tintFor(i)}"
+        title="Pick ${esc(r.team)} for ${esc(e.name)}">${esc(shortName(e, i))}</button>`;
+    }).join("");
+
     tr.innerHTML = `
-      <td class="abbr">${r.team}${score}</td>
-      <td class="oppo">${r.isHome ? "vs" : "at"} ${r.opponent}</td>
-      <td class="hide-sm muted">${kick.label}</td>
+      <td class="abbr">${esc(r.team)}${score}</td>
+      <td class="oppo">${r.isHome ? "vs" : "at"} ${esc(r.opponent)}</td>
+      <td class="hide-sm muted">${k.label}</td>
       <td class="hide-sm muted">${describeLine(r)}</td>
       <td class="num p">${fmtPct(r.loseProb)}</td>
       <td style="width:70px"><span class="bar" style="width:${Math.round(60 * r.loseProb / maxP)}px"></span></td>
-      <td>${tags.join(" ")}</td>`;
-
-    if (!isUsed && !app.state.eliminated && !app.state.picks[String(app.week)]) {
-      tr.style.cursor = "pointer";
-      tr.title = `Pick ${r.team} for week ${app.week}`;
-      tr.onclick = () => makePick(r.team, r.opponent);
-    }
+      <td>${tags.join(" ")}</td>
+      <td><div class="acts">${buttons}</div></td>`;
     tbody.appendChild(tr);
   }
 
-  const wk = app.weeks.get(app.week);
-  $("#byes").textContent = wk && wk.byes.length
-    ? `On bye: ${wk.byes.join(", ")}` : "";
+  const week = app.weeks.get(app.week);
+  $("#byes").textContent = week && week.byes.length
+    ? `On bye: ${week.byes.join(", ")}` : "";
 }
 
-function renderStanding() {
-  const st = app.state;
-  const savesLeft = Math.max(0, st.savesTotal - st.savesUsed);
-  $("#statline").innerHTML = `
-    <span class="pill ${st.eliminated ? "dead" : "alive"}">${st.eliminated ? "Eliminated" : "Alive"}</span>
-    <span class="stat">Saves left <b>${savesLeft}/${st.savesTotal}</b></span>
-    <span class="stat">Teams used <b>${st.used.length}/32</b></span>
-    <span class="stat">Ties <b>${st.tieSurvives ? "survive" : "fail"}</b></span>`;
+/** "Entry 2" -> "E2"; a renamed entry keeps its first characters. */
+function shortName(entry, i) {
+  const m = /^Entry (\d+)$/.exec(entry.name);
+  return m ? `E${m[1]}` : entry.name.slice(0, 4);
+}
 
-  const weeks = $("#weeks");
-  weeks.innerHTML = "";
-  for (let w = 1; w <= LAST_WEEK; w++) {
-    const p = st.picks[String(w)];
-    const div = document.createElement("div");
-    let cls = "wk";
-    if (p) {
-      if (p.result === "loss") cls += " loss";
-      else if (p.result === "win") cls += " win";
-      else if (p.result === "tie") cls += st.tieSurvives ? " loss" : " tie-bad";
-      else cls += " pending";
-    }
-    div.className = cls;
-    div.innerHTML = `<b>WK ${w}</b>${p ? p.team : "—"}`;
-    if (p && p.result && p.result !== "pending") div.title = `${p.team}: ${p.result}`;
-    weeks.appendChild(div);
+function renderStorageMode(where) {
+  const el = $("#storageMode");
+  if (Store.mode === "server") {
+    el.innerHTML = `Saving to <b>${esc(Store.path || "state/losers_" + app.season + ".json")}</b>`;
+    el.className = "muted";
+  } else {
+    el.innerHTML = `Saving to <b>this browser only</b> — run
+      <code>python3 scripts/serve.py</code> to save to a file instead.`;
+    el.className = "muted";
   }
+  $("#footnote").innerHTML = Store.mode === "server"
+    ? `Odds and results come from ESPN's public API. Picks are written to a JSON
+       file under <code>state/</code>, and mirrored into this browser as a backup.`
+    : `Odds and results come from ESPN's public API. Picks are stored in this
+       browser only (<code>localStorage</code>) — use Export JSON to back them up.`;
 }
 
 function renderModelInfo() {
@@ -979,9 +1169,7 @@ function renderModelInfo() {
       vs the old hardcoded <b>${m.legacyK}</b>.</div>
     <div class="kv">Home-field edge in the market: <b>${m.homeFieldPoints.toFixed(2)}</b> pts.</div>
     <div class="kv">Brier <b>${m.brier.toFixed(4)}</b> (old model ${m.brierLegacy.toFixed(4)}),
-      log-loss <b>${m.logLoss.toFixed(4)}</b> (old ${m.logLossLegacy.toFixed(4)}).</div>
-    <div class="kv muted">Projected lines: actual ≈ ${DATA.projection.intercept.toFixed(2)}
-      + ${DATA.projection.scale.toFixed(2)} × projected, σ ${DATA.projection.sigma.toFixed(2)} pts.</div>`;
+      log-loss <b>${m.logLoss.toFixed(4)}</b> (old ${m.logLossLegacy.toFixed(4)}).</div>`;
 
   const bt = DATA.backtest || {};
   const exact = bt.exact || {};
@@ -1025,43 +1213,60 @@ function renderModelInfo() {
 // Actions
 // ---------------------------------------------------------------------------
 
-function makePick(team, opponent) {
-  const st = app.state;
-  if (st.eliminated) { setStatus("This profile is already eliminated.", true); return; }
-  if (st.picks[String(app.week)]) { setStatus("Week already has a pick — undo it first.", true); return; }
-  if (st.used.includes(team)) { setStatus(`${team} has already been used.`, true); return; }
-  if (!confirm(`Lock in ${team} to LOSE in week ${app.week}?`)) return;
+function entryById(id) { return state.entries.find((e) => e.id === id); }
 
-  st.used.push(team);
-  st.picks[String(app.week)] = {
-    week: app.week, team, opponent: opponent || null, result: "pending",
+function makePick(entryId, team) {
+  const entry = entryById(entryId);
+  if (!entry) return;
+  const wk = String(app.week);
+  if (entry.eliminated) { setStatus(`${entry.name} is eliminated.`, true); return; }
+  if (entry.picks[wk]) { setStatus(`${entry.name} already picked this week.`, true); return; }
+  if (entry.used.includes(team)) { setStatus(`${entry.name} already used ${team}.`, true); return; }
+
+  const clash = state.entries.find((e) =>
+    e !== entry && e.picks[wk] && e.picks[wk].team === team);
+  const warn = clash
+    ? `\n\nWarning: ${clash.name} is also on ${team} this week. If ${team} wins, ` +
+      `both entries take the hit at once.`
+    : "";
+  if (!confirm(`Lock in ${team} to LOSE in week ${app.week} for ${entry.name}?${warn}`)) return;
+
+  const rows = buildBoard(app.week);
+  const row = rows.find((r) => r.team === team);
+  entry.used.push(team);
+  entry.picks[wk] = {
+    week: app.week, team,
+    opponent: row ? row.opponent : null,
+    result: "pending",
   };
-  saveState(st);
-  setStatus(`Locked in ${team} for week ${app.week}.`);
+  persist();
+  setStatus(`${entry.name}: locked in ${team} for week ${app.week}.`);
   render();
 }
 
-function undoPick(weekNo) {
-  const st = app.state;
-  const p = st.picks[String(weekNo)];
+function undoPick(entryId) {
+  const entry = entryById(entryId);
+  const wk = String(app.week);
+  const p = entry && entry.picks[wk];
   if (!p) return;
-  if (!confirm(`Undo the week ${weekNo} pick (${p.team})?`)) return;
-  delete st.picks[String(weekNo)];
-  st.used = st.used.filter((t) => t !== p.team);
-  saveState(st);
-  setStatus(`Removed the week ${weekNo} pick.`);
+  if (!confirm(`Undo ${entry.name}'s week ${app.week} pick (${p.team})?`)) return;
+  delete entry.picks[wk];
+  entry.used = entry.used.filter((t) => t !== p.team);
+  persist();
+  setStatus(`Removed ${entry.name}'s week ${app.week} pick.`);
   render();
 }
 
-async function settleWeek() {
-  const st = app.state;
-  const p = st.picks[String(app.week)];
+async function settleEntry(entryId) {
+  const entry = entryById(entryId);
+  const wk = String(app.week);
+  const p = entry && entry.picks[wk];
   if (!p) return;
-  setStatus("Checking results…");
+  setStatus(`Checking ${entry.name}…`);
   try {
-    const wk = await fetchWeek(app.season, app.week, { force: true });
-    app.weeks.set(app.week, wk);
-    const g = wk.games.find((x) => x.home === p.team || x.away === p.team);
+    const week = await fetchWeek(app.season, app.week, { force: true });
+    app.weeks.set(app.week, week);
+    const g = week.games.find((x) => x.home === p.team || x.away === p.team);
     if (!g) { setStatus(`${p.team} is not on the week ${app.week} schedule.`, true); return; }
     if (!g.completed) { setStatus(`That game has not finished yet (${g.state}).`); return; }
     if (g.homeScore == null || g.awayScore == null) {
@@ -1071,17 +1276,15 @@ async function settleWeek() {
     const mine = isHome ? g.homeScore : g.awayScore;
     const theirs = isHome ? g.awayScore : g.homeScore;
     p.result = mine === theirs ? "tie" : (mine < theirs ? "loss" : "win");
-    saveState(st);
-    recomputeStanding(st);
-    saveState(st);
+    await persist({ immediate: true });
 
-    const survived = p.result === "loss" || (p.result === "tie" && st.tieSurvives);
-    const savesLeft = Math.max(0, st.savesTotal - st.savesUsed);
+    const survived = p.result === "loss" || (p.result === "tie" && state.tieSurvives);
+    const savesLeft = Math.max(0, entry.savesTotal - entry.savesUsed);
     setStatus(survived
-      ? `${p.team} lost ${mine}-${theirs}. You advance.`
-      : `${p.team} ${p.result === "tie" ? "tied" : "won"} ${mine}-${theirs}. ` +
-        (st.eliminated ? "No saves left — eliminated."
-                       : `A save was used; ${savesLeft} left.`));
+      ? `${entry.name}: ${p.team} lost ${mine}-${theirs}. Advances.`
+      : `${entry.name}: ${p.team} ${p.result === "tie" ? "tied" : "won"} ${mine}-${theirs}. ` +
+        (entry.eliminated ? "No saves left — eliminated."
+                          : `A save was used; ${savesLeft} left.`));
     render();
   } catch (e) {
     setStatus("Could not settle: " + e.message, true);
@@ -1089,11 +1292,10 @@ async function settleWeek() {
 }
 
 function exportState() {
-  const blob = new Blob([JSON.stringify(app.state, null, 2)],
-    { type: "application/json" });
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = `losers_${app.state.profile}_${app.state.season}.json`;
+  a.download = `losers_${state.season}.json`;
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -1105,23 +1307,17 @@ function importState(file) {
   reader.onload = () => {
     try {
       const raw = JSON.parse(String(reader.result));
-      const profile = String(raw.profile || app.profile);
-      const season = Number(raw.season || app.season);
-      const st = normaliseState(raw, profile, season);
-      saveState(st);
-      if (!listProfiles().includes(profile)) {
-        saveProfiles(listProfiles().concat([profile]));
-      }
-      app.profile = profile;
-      setStatus(`Imported ${Object.keys(st.picks).length} picks into "${profile}" (${season}).`);
-      buildProfileSelect();
+      const season = Number(raw.season) || app.season;
+      state = normaliseState(raw, season);
+      persist({ immediate: true });
+      const picks = state.entries.reduce((n, e) => n + Object.keys(e.picks).length, 0);
+      setStatus(`Imported ${state.entries.length} entr${state.entries.length === 1 ? "y" : "ies"}, ${picks} picks.`);
+      syncRuleInputs();
       if (season !== app.season) {
-        $("#season").value = String(season);
         app.season = season;
+        $("#season").value = String(season);
         loadSeason();
       } else {
-        app.state = loadState(app.profile, app.season);
-        syncRuleInputs();
         render();
       }
     } catch (e) {
@@ -1135,30 +1331,16 @@ function importState(file) {
 // Wiring
 // ---------------------------------------------------------------------------
 
-function buildProfileSelect() {
-  const sel = $("#profile");
-  sel.innerHTML = "";
-  for (const name of listProfiles()) {
-    const opt = document.createElement("option");
-    opt.value = opt.textContent = name;
-    sel.appendChild(opt);
-  }
-  sel.value = app.profile;
-}
-
 function syncRuleInputs() {
-  $("#savesTotal").value = app.state.savesTotal;
-  $("#tieRule").value = app.state.tieSurvives ? "survive" : "fail";
+  $("#tieRule").value = state.tieSurvives ? "survive" : "fail";
 }
 
-/**
- * Load every week of the season so ratings and the lookahead have data.
- * The current week is fetched first so the board paints immediately.
- */
 async function loadSeason() {
   app.weeks.clear();
-  app.state = loadState(app.profile, app.season);
+  const raw = await Store.load(app.season);
+  state = raw ? normaliseState(raw, app.season) : blankState(app.season);
   syncRuleInputs();
+  renderStorageMode();
 
   setStatus(`Loading week ${app.week}…`);
   try {
@@ -1170,21 +1352,18 @@ async function loadSeason() {
   recomputeRatings();
   render();
 
-  setStatus("Loading the rest of the season for lookahead…");
-  const others = [];
-  for (let w = 1; w <= LAST_WEEK; w++) if (w !== app.week) others.push(w);
+  setStatus("Loading the rest of the season…");
   let failed = 0;
-  for (const w of others) {
-    try {
-      app.weeks.set(w, await fetchWeek(app.season, w));
-    } catch (_) { failed += 1; }
+  for (let w = 1; w <= LAST_WEEK; w++) {
+    if (w === app.week) continue;
+    try { app.weeks.set(w, await fetchWeek(app.season, w)); }
+    catch (_) { failed += 1; }
   }
   recomputeRatings();
   render();
-  const rated = Object.keys(app.ratings).length;
   setStatus(failed
-    ? `Loaded ${LAST_WEEK - failed}/${LAST_WEEK} weeks (${failed} failed). Ratings from ${rated} teams.`
-    : `Season loaded. Ratings built from posted lines across ${LAST_WEEK} weeks.`);
+    ? `Loaded ${LAST_WEEK - failed}/${LAST_WEEK} weeks (${failed} unavailable).`
+    : "Season loaded.");
 }
 
 /** Rebuild team ratings from every posted line we have for this season. */
@@ -1236,24 +1415,6 @@ function wireEvents() {
     loadSeason();
   };
   $("#week").onchange = (e) => { app.week = Number(e.target.value); render(); };
-  $("#profile").onchange = (e) => {
-    app.profile = e.target.value;
-    app.state = loadState(app.profile, app.season);
-    syncRuleInputs();
-    render();
-  };
-  $("#newProfile").onclick = () => {
-    const name = (prompt("Name for the new profile?") || "").trim();
-    if (!name) return;
-    const names = listProfiles();
-    if (!names.includes(name)) { names.push(name); saveProfiles(names); }
-    app.profile = name;
-    app.state = loadState(name, app.season);
-    saveState(app.state);
-    buildProfileSelect();
-    syncRuleInputs();
-    render();
-  };
   $("#refresh").onclick = async () => {
     setStatus("Refreshing odds…");
     try {
@@ -1263,6 +1424,36 @@ function wireEvents() {
       setStatus("Odds refreshed.");
     } catch (e) { setStatus("Refresh failed: " + e.message, true); }
   };
+
+  // One delegated handler covers the pick/settle/undo/rename/remove buttons,
+  // which are rebuilt on every render.
+  document.addEventListener("click", (ev) => {
+    const t = ev.target.closest("button");
+    if (!t) return;
+    if (t.dataset.pick) return makePick(t.dataset.pick, t.dataset.team);
+    if (t.dataset.settle) return void settleEntry(t.dataset.settle);
+    if (t.dataset.undo) return undoPick(t.dataset.undo);
+    if (t.dataset.rename) {
+      const entry = entryById(t.dataset.rename);
+      const name = (prompt("Name for this entry?", entry.name) || "").trim();
+      if (name) { entry.name = name; persist(); render(); }
+      return;
+    }
+    if (t.dataset.remove) {
+      const entry = entryById(t.dataset.remove);
+      if (state.entries.length < 2) return;
+      if (!confirm(`Remove ${entry.name} and all its picks?`)) return;
+      state.entries = state.entries.filter((e) => e !== entry);
+      persist(); render();
+    }
+  });
+  document.addEventListener("change", (ev) => {
+    const id = ev.target.dataset && ev.target.dataset.saves;
+    if (!id) return;
+    const entry = entryById(id);
+    entry.savesTotal = Math.max(0, Number(ev.target.value) || 0);
+    persist(); render();
+  });
 
   for (const chip of document.querySelectorAll(".chip[data-day]")) {
     const toggle = () => {
@@ -1274,15 +1465,21 @@ function wireEvents() {
     chip.onclick = toggle;
     chip.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } };
   }
-  $("#hideUsed").onchange = (e) => { app.hideUsed = e.target.checked; render(); };
 
-  $("#savesTotal").onchange = (e) => {
-    app.state.savesTotal = Math.max(0, Number(e.target.value) || 0);
-    saveState(app.state); render();
-  };
   $("#tieRule").onchange = (e) => {
-    app.state.tieSurvives = e.target.value === "survive";
-    saveState(app.state); render();
+    state.tieSurvives = e.target.value === "survive";
+    persist(); render();
+  };
+  $("#addEntry").onclick = () => {
+    const n = state.entries.length + 1;
+    const saves = state.entries.length ? state.entries[0].savesTotal : 2;
+    state.entries.push(blankEntry(n, saves));
+    // Ids must stay unique even after removals.
+    const seen = new Set(state.entries.slice(0, -1).map((e) => e.id));
+    let k = n;
+    while (seen.has(`e${k}`)) k += 1;
+    state.entries[state.entries.length - 1].id = `e${k}`;
+    persist(); render();
   };
   $("#exportBtn").onclick = exportState;
   $("#importBtn").onclick = () => $("#importFile").click();
@@ -1291,18 +1488,20 @@ function wireEvents() {
     e.target.value = "";
   };
   $("#resetBtn").onclick = () => {
-    if (!confirm(`Erase all picks for "${app.profile}" in ${app.season}?`)) return;
-    app.state = blankState(app.profile, app.season);
-    saveState(app.state);
+    if (!confirm(`Erase all picks for ${app.season}?`)) return;
+    const count = state.entries.length;
+    const saves = state.entries.length ? state.entries[0].savesTotal : 2;
+    state = blankState(app.season, count);
+    state.entries.forEach((e) => { e.savesTotal = saves; });
+    persist({ immediate: true });
     syncRuleInputs();
-    setStatus("Profile reset.");
+    setStatus("Season reset.");
     render();
   };
 }
 
 async function init() {
   renderModelInfo();
-  app.profile = listProfiles()[0];
 
   const fallbackSeason = DATA && DATA.seasons.length
     ? DATA.seasons[DATA.seasons.length - 1] + 1 : new Date().getFullYear();
@@ -1319,12 +1518,11 @@ async function init() {
   app.season = app.currentSeason;
   app.week = app.currentWeek;
 
+  await Store.detect(app.season);
   buildSeasonSelect();
   buildWeekSelect();
-  buildProfileSelect();
   wireEvents();
-  $("#tagline").textContent =
-    `${app.currentSeason} season · week ${app.currentWeek}`;
+  $("#tagline").textContent = `${app.currentSeason} season · week ${app.currentWeek}`;
   await loadSeason();
 }
 

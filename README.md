@@ -6,36 +6,65 @@ win-probability curve fitted to five seasons of real results.
 
 ## Using it
 
-Open `index.html` in a browser. That's the whole tool — no install, no build,
-no server.
+Recommended — picks are saved to a real JSON file:
 
 ```
-git clone <this repo>
-open index.html          # or double-click it
+python3 scripts/serve.py        # then open http://localhost:8000
 ```
 
-If your browser blocks the local data file over `file://`, serve the folder
-instead:
-
-```
-python3 -m http.server 8000     # then visit http://localhost:8000
-```
+Or just open `index.html` directly (double-click it). Everything works the
+same, except picks are stored only in that browser. The page tells you which
+mode you are in.
 
 The page fetches the current week's games and odds from ESPN, ranks every
-available team by its chance of losing, and recommends one. Click a team (or
-"Lock in") to record the pick; after the games finish, hit **Settle week** to
-pull the final score and update your saves and elimination status.
+available team by its chance of losing, and recommends one per entry. Click
+**Lock in** (or a team's button on the board) to record a pick; once the games
+finish, hit **Settle** to pull the final score and update saves and
+elimination.
 
-- **Picks live in your browser only** (`localStorage`). Use **Export JSON** to
-  back them up or move them to another device; **Import JSON** reads those
-  files back, and also reads state files written by the old Python CLI.
-- **League rules are configurable**: set the number of saves/mulligans and
-  whether a tie counts as surviving. Defaults are 1 save and tie-survives.
-- **Multiple profiles** are supported for running more than one entry.
+- **Multiple entries** are first-class. Each has its own used teams, saves and
+  elimination state, and each week the tool recommends a *different* team for
+  each one — see below for why that matters. Add, rename or remove entries at
+  any time; the default is two.
+- **League rules are configurable**: saves per entry (set on each entry card)
+  and whether a tie counts as surviving.
 - Filter out Thursday/Sunday/Monday games if your league's deadline makes them
   impractical.
 - Past seasons (2021–2025) can be browsed too; the closing lines for those are
   baked into `data/history.js`, since ESPN strips odds from old scoreboards.
+
+### Where picks are stored
+
+With `scripts/serve.py` running, picks go to `state/losers_<season>.json` —
+a plain file you can read, commit, or back up, written atomically with one
+previous generation kept as `.bak`. They are mirrored into the browser as well,
+so losing the server does not lose the season.
+
+Opened directly from disk, there is no server to write to, so picks live in
+that browser's `localStorage` only. That is per-browser and per-device: no sync
+between laptop and phone, and clearing site data wipes it. Note also that
+`file://` and `http://localhost:8000` are separate origins with separate
+storage — pick one and stay with it, or use the server, which is the same file
+either way. **Export JSON** / **Import JSON** move a season between machines,
+and Import also reads state files written by the old Python CLI.
+
+## Playing more than one entry
+
+Two entries only help if they are pointed at different games. Put both on the
+same team and, when that team wins, they both die together — the pair survives
+with exactly the probability of a single entry. Split them and the chance that
+at least one survives the week is `1 - (1-p₁)(1-p₂)`.
+
+With week 1 of 2026 as an example: ARI at 79.2% and CLE at 76.7% give a 95.1%
+chance at least one entry survives, against 79.2% if both sit on ARI. Over a
+season the effect compounds — two independent entries roughly double the odds
+that one of them goes the distance, while two identical entries are worth no
+more than one.
+
+So the tool never recommends the same team to two entries in the same week. It
+tries each order of entries and keeps whichever assignment maximises the odds
+that at least one survives, since each entry has its own list of spent teams. It
+will still *let* you double up from the board if you want to, with a warning.
 
 ## What the historical data actually showed
 
@@ -127,5 +156,7 @@ python3 -m losers_league --season 2026 --week 1 --profile main settle
 ```
 
 It stores state in `state/{profile}_{season}.json`, which the web app can
-import. Note that ESPN serves no odds for completed seasons, so the CLI shows
-"no spread" for past weeks; the web app covers that from its archived data.
+import. It has no notion of multiple entries — the web app is the one to use
+for that. Note also that ESPN serves no odds for completed seasons, so the CLI
+shows "no spread" for past weeks; the web app covers that from its archived
+data.
