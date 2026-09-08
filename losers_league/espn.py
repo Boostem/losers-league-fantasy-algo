@@ -10,20 +10,24 @@ except Exception:  # pragma: no cover - fallback
     import urllib.request  # type: ignore
 
 
+# NOTE: this endpoint ignores a `year=` parameter entirely and always serves the
+# newest season, which silently returned current-season games for any historical
+# query. `dates=` is the parameter it actually honours.
 SCOREBOARD_URL = (
-    "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week={week}&year={year}&seasontype=2"
+    "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week={week}&dates={year}&seasontype=2"
 )
 
 
 def _http_get(url: str, timeout: int = 15) -> str:
+    # ESPN's scoreboard host sits behind bot protection that rejects
+    # unrecognised User-Agent strings with a 403, so send the client library's
+    # own default rather than a custom one.
     if requests is not None:
-        r = requests.get(url, timeout=timeout, headers={
-            "User-Agent": "losers-league-helper/1.0"
-        })
+        r = requests.get(url, timeout=timeout)
         r.raise_for_status()
         return r.text
     # Fallback to urllib
-    req = urllib.request.Request(url, headers={"User-Agent": "losers-league-helper/1.0"})
+    req = urllib.request.Request(url)
     with urllib.request.urlopen(req, timeout=timeout) as resp:  # type: ignore
         return resp.read().decode("utf-8")
 
@@ -43,6 +47,12 @@ def fetch_week_games(year: int, week: int) -> List[Dict[str, Any]]:
     url = SCOREBOARD_URL.format(week=week, year=year)
     raw = _http_get(url)
     data = json.loads(raw)
+    served = (data.get("season") or {}).get("year")
+    if served is not None and int(served) != int(year):
+        raise RuntimeError(
+            f"ESPN served season {served} when asked for {year}; "
+            "the 'dates' parameter is not being honoured."
+        )
     events = data.get("events", [])
     games: List[Dict[str, Any]] = []
 
@@ -73,6 +83,10 @@ def fetch_week_games(year: int, week: int) -> List[Dict[str, Any]]:
         for o in odds_list:
             details = (o or {}).get("details")
             prov = (o or {}).get("provider") or {}
+            # "Live Odds" feeds carry the in-game number, not the line you bet
+            # into, and would badly distort the pick.
+            if "live odds" in str(prov.get("name") or "").lower():
+                continue
             provider = prov.get("name") or provider
             # details looks like "KC -6.5"
             if isinstance(details, str) and details.strip():

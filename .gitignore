@@ -1,2 +1,9 @@
 .venv/
 state/
+__pycache__/
+*.pyc
+
+# Raw ESPN responses cached by scripts/build_history.py. Regenerate with
+# `python3 scripts/build_history.py`; the derived data/history.* files are
+# committed instead.
+data/cache/
